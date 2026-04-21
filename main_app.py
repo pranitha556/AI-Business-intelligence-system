@@ -69,7 +69,7 @@ def auth():
             else:
                 try:
                     res = requests.post(
-                        "https://ai-business-intelligence-system-1.onrender.com/login",
+                        "https://ai-business-intelligence-system-kmr6.onrender.com/login",
                         json={
                             "username": u.strip(),
                             "password": p.strip()
@@ -103,7 +103,7 @@ def auth():
             else:
                 try:
                     res = requests.post(
-                        "https://ai-business-intelligence-system-1.onrender.com/signup",
+                        "https://ai-business-intelligence-system-kmr6.onrender.com/signup",
                         json={
                             "username": u.strip(),
                             "password": p.strip()
