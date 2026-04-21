@@ -243,7 +243,7 @@ CSV, Excel, JSON, TXT
         )
 
     # JSON
-    with open("datasets/sample.json", "rb") as file:
+    with open("datasets/SampleSuperstore.csv", "rb") as file:
         st.download_button(
             label="Download JSON Dataset",
             data=file,
