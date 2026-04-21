@@ -153,14 +153,8 @@ if page == "Dataset Guide":
 ### 🔹 Step 1: Login / Signup
 - Create an account using the **Signup** option  
 - Then login using your credentials  
-
-st.markdown("""
-### 🚀 How to Use
-
-1. Click on **Dashboard** to upload your dataset  
-2. If you don’t have data, scroll down to **download demo datasets**
-""")
-
+-  click on business insights dashboard to uplad your datasets
+- Scroll down to download demo datasets
 ---
 
 ### 🔹 Step 2: Upload Dataset 📁
