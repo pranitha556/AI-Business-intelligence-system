@@ -69,7 +69,7 @@ def auth():
             else:
                 try:
                     res = requests.post(
-                        "https://ai-business-intelligence-system-kmr6.onrender.com/login",
+                        "https://ai-business-intelligence-system-1.onrender.com/login",
                         json={
                             "username": u.strip(),
                             "password": p.strip()
@@ -103,7 +103,7 @@ def auth():
             else:
                 try:
                     res = requests.post(
-                        "https://ai-business-intelligence-system-kmr6.onrender.com/signup",
+                        "https://ai-business-intelligence-system-1.onrender.com/signup",
                         json={
                             "username": u.strip(),
                             "password": p.strip()
@@ -153,6 +153,13 @@ if page == "Dataset Guide":
 ### 🔹 Step 1: Login / Signup
 - Create an account using the **Signup** option  
 - Then login using your credentials  
+
+st.markdown("""
+### 🚀 How to Use
+
+1. Click on **Dashboard** to upload your dataset  
+2. If you don’t have data, scroll down to **download demo datasets**
+""")
 
 ---
 
