@@ -242,14 +242,6 @@ CSV, Excel, JSON, TXT
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-    # JSON
-    with open("datasets/SampleSuperstore.csv", "rb") as file:
-        st.download_button(
-            label="Download JSON Dataset",
-            data=file,
-            file_name="sample.json",
-            mime="application/json"
-        )
 
     # ---------------- NOTE ----------------
     st.markdown("""
