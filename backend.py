@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException UploadFile,File
 from pydantic import BaseModel
 import sqlite3
 from passlib.context import CryptContext
