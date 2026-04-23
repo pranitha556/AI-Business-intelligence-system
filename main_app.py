@@ -148,7 +148,7 @@ if page == "Dataset Guide":
 
     # ---------------- GUIDE ----------------
     st.markdown("""
-## 🧭 Step-by-Step Guide to Use the System
+##  Step-by-Step Guide to Use the System
 
 ### 🔹 Step 1: Login / Signup
 - Create an account using the **Signup** option  
@@ -157,7 +157,7 @@ if page == "Dataset Guide":
 - Scroll down to download demo datasets
 ---
 
-### 🔹 Step 2: Upload Dataset 📁
+###  Step 2: Upload Dataset 📁
 - Go to **Upload Dataset** section  
 - Supported formats:
   - CSV (.csv)
@@ -167,7 +167,7 @@ if page == "Dataset Guide":
 
 ---
 
-### 🔹 Step 3: Dataset Processing ⚙️
+###  Step 3: Dataset Processing 
 - The system automatically reads your dataset  
 - Detects:
   - Numerical columns  
@@ -176,7 +176,7 @@ if page == "Dataset Guide":
 
 ---
 
-### 🔹 Step 4: Auto Column Generation 🔄
+###  Step 4: Auto Column Generation 
 If required columns are missing, system generates:
 
 - `sales = quantity × 100`  
@@ -186,7 +186,7 @@ If required columns are missing, system generates:
 
 ---
 
-### 🔹 Step 5: Data Visualization 📊
+###  Step 5: Data Visualization 
 - Automatically generates:
   - Bar charts  
   - Line charts  
@@ -195,13 +195,13 @@ If required columns are missing, system generates:
 
 ---
 
-### 🔹 Step 6: Analysis & Insights 📈
+###  Step 6: Analysis & Insights 
 - Displays patterns and trends  
 - Helps in business decision making  
 
 ---
 
-### 🔹 Step 7: Use Sample Dataset (Optional) 📥
+###  Step 7: Use Sample Dataset (Optional) 
 - If you don’t have data:
   - Download sample datasets below  
   - Upload them to test the system  
@@ -213,7 +213,7 @@ CSV, Excel, JSON, TXT
 
 ---
 
-## ⚠️ Important Guidelines
+##  Important Guidelines
 - Dataset must have column headers  
 - Avoid empty or corrupted files  
 - Keep data clean and structured  
@@ -221,7 +221,7 @@ CSV, Excel, JSON, TXT
 
     # ---------------- DOWNLOAD SECTION ----------------
     st.divider()
-    st.subheader("📥 Download Sample Datasets")
+    st.subheader(" Download Sample Datasets")
 
     st.write("Download these datasets to test the application features.")
 
@@ -246,7 +246,7 @@ CSV, Excel, JSON, TXT
 
     # ---------------- NOTE ----------------
     st.markdown("""
-### ℹ️ Important Information
+###  Important Information
 
 - The sample datasets are provided **only for demonstration purposes**
 - Users are encouraged to upload their **own datasets** for actual analysis  
@@ -316,16 +316,16 @@ df["risk_status"] = (
 # ---------------------------------------------------
 if page == "Business Insights Dashbard":
     
-    st.title("📊 Business Intelligence Dashboard")
+    st.title(" Business Intelligence Dashboard")
     st.markdown("### Real-time Business Risk Analysis System")
     st.markdown("""
-### 🎯 Problem Statement
+###  Problem Statement
 
 Businesses struggle to identify risky transactions and low-performing vendors.
 This system provides data-driven insights and predictions.
 """)
 
-    st.sidebar.markdown("### 🔍 Filters")
+    st.sidebar.markdown("###  Filters")
 
     category_filter = st.sidebar.multiselect(
         "Select Category",
@@ -342,22 +342,22 @@ This system provides data-driven insights and predictions.
     col3.metric("Transactions", len(filtered_df))
     col4.metric("High Risk %", round(filtered_df["risk_status"].mean()*100,2))
 
-    st.subheader("📌 Key Insights")
+    st.subheader(" Key Insights")
 
     top_category = filtered_df.groupby("category")["sales"].sum().idxmax()
     high_risk_percent = filtered_df["risk_status"].mean() * 100
 
-    st.write(f"🔹 Top Category: {top_category}")
-    st.write(f"🔹 High Risk Transactions: {round(high_risk_percent,2)}%")
+    st.write(f" Top Category: {top_category}")
+    st.write(f" High Risk Transactions: {round(high_risk_percent,2)}%")
 
-    st.subheader("💡 Recommendations")
+    st.subheader(" Recommendations")
 
     if high_risk_percent > 30:
         st.warning("High risk detected. Reduce discount strategy.")
     else:
         st.success("Business is stable.")
 
-    # 🎯 GAUGE
+    #  GAUGE
     risk_rate = filtered_df["risk_status"].mean()*100
 
     fig_gauge = go.Figure(go.Indicator(
@@ -369,7 +369,7 @@ This system provides data-driven insights and predictions.
 
     st.plotly_chart(fig_gauge, use_container_width=True)
 
-    # 📊 CHARTS
+    #  CHARTS
     col1, col2 = st.columns(2)
 
     with col1:
@@ -419,11 +419,11 @@ This system provides data-driven insights and predictions.
 
 
 # ---------------------------------------------------
-# ⚠️ RISK ANALYSIS
+#  RISK ANALYSIS
 # ---------------------------------------------------
 elif page == "Risk Analysis":
 
-    st.title("⚠️ Advanced Risk Analysis Dashboard")
+    st.title(" Advanced Risk Analysis Dashboard")
 
     col1, col2, col3 = st.columns(3)
 
@@ -431,9 +431,9 @@ elif page == "Risk Analysis":
     total_safe = (df["risk_status"] == 0).sum()
     risk_percent = df["risk_status"].mean() * 100
 
-    col1.metric("🚨 High Risk Transactions", total_risk)
-    col2.metric("✅ Safe Transactions", total_safe)
-    col3.metric("📊 Risk %", round(risk_percent,2))
+    col1.metric(" High Risk Transactions", total_risk)
+    col2.metric(" Safe Transactions", total_safe)
+    col3.metric(" Risk %", round(risk_percent,2))
 
     st.markdown("---")
 
@@ -445,7 +445,7 @@ elif page == "Risk Analysis":
     st.plotly_chart(fig_pie, use_container_width=True)
 
     # CATEGORY RISK
-    st.subheader("📊 Risk by Category")
+    st.subheader("Risk by Category")
     cat_risk = df.groupby("category")["risk_status"].mean().reset_index()
 
     st.plotly_chart(px.bar(cat_risk, x="category", y="risk_status", color="risk_status"))
@@ -459,27 +459,27 @@ elif page == "Risk Analysis":
 
     st.plotly_chart(px.line(trend, x="order_date", y="risk_status"))
 
-    # ADVANCED FEATURE 🔥
-    st.subheader("📌 Risk Insight")
+    # ADVANCED FEATURE 
+    st.subheader(" Risk Insight")
 
     if risk_percent > 40:
-        st.error("🚨 Critical Risk Level - Immediate Action Required")
+        st.error(" Critical Risk Level - Immediate Action Required")
     elif risk_percent > 20:
-        st.warning("⚠️ Moderate Risk - Monitor Closely")
+        st.warning(" Moderate Risk - Monitor Closely")
     else:
         st.success("✅ Low Risk - Business Stable")
 
     # TOP RISK TRANSACTIONS
-    st.subheader("🚨 Top Risk Transactions")
+    st.subheader(" Top Risk Transactions")
     st.dataframe(df[df["risk_status"] == 1].head(10))
 
 
 # ---------------------------------------------------
-# 🤖 MACHINE LEARNING
+#  MACHINE LEARNING
 # ---------------------------------------------------
 elif page == "Machine Learning":
 
-    st.title("🤖 AI Risk Prediction System")
+    st.title(" AI Risk Prediction System")
 
     features = ["sales","profit","discount","shipping_cost","quantity"]
 
@@ -521,8 +521,8 @@ elif page == "Machine Learning":
 
     st.plotly_chart(px.bar(imp_df, x="Feature", y="Importance", color="Importance"))
 
-    # NEW FEATURE 🔥
-    st.subheader("📊 Prediction Insight")
+    # NEW FEATURE 
+    st.subheader(" Prediction Insight")
 
     high_risk_count = (pred == 1).sum()
     st.write(f"Predicted High Risk Cases: {high_risk_count}")
@@ -532,7 +532,7 @@ elif page == "Machine Learning":
     df["anomaly"] = iso.fit_predict(X)
 
     fraud_count = (df["anomaly"] == -1).sum()
-    st.error(f"🚨 Suspicious Transactions: {fraud_count}")
+    st.error(f" Suspicious Transactions: {fraud_count}")
 
     # PREDICTION INPUT
     st.subheader("Predict Risk")
@@ -585,8 +585,8 @@ elif page == "Vendor Analytics":
         color="risk_score"
     ))
 
-    # NEW FEATURE 🔥
-    st.subheader("📌 Vendor Insight")
+    # NEW FEATURE 
+    st.subheader(" Vendor Insight")
 
     risky_vendors = vendor_df[vendor_df["risk_score"] > 50]
 
@@ -600,5 +600,5 @@ elif page == "Vendor Analytics":
     st.dataframe(vendor_df.sort_values(by="risk_score", ascending=False).head(5))
 
     # BEST
-    st.subheader("🏆 Best Vendors")
+    st.subheader(" Best Vendors")
     st.dataframe(vendor_df.sort_values(by="sales", ascending=False).head(5))
