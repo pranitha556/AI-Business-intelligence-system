@@ -52,7 +52,7 @@ if not st.session_state.splash_done:
     # ---------------- AUTH FUNCTION ----------------
 def auth():
     
-    st.title("AI Business Intelligence Platform 🔐")
+    st.title("AI Business Intelligence Platform ")
     choice = st.radio("Choose", ["Login", "Sign Up"])
 
     # ---------------- LOGIN ----------------
@@ -144,13 +144,13 @@ if st.sidebar.button("Logout"):
 # ---------------------------------------------------
 if page == "Dataset Guide":
     
-    st.title("📘 Dataset Usage Guide")
+    st.title(" Dataset Usage Guide")
 
     # ---------------- GUIDE ----------------
     st.markdown("""
 ##  Step-by-Step Guide to Use the System
 
-### 🔹 Step 1: Login / Signup
+###  Step 1: Login / Signup
 - Create an account using the **Signup** option  
 - Then login using your credentials  
 -  click on business insights dashboard to uplad your datasets
