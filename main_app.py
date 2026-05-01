@@ -407,9 +407,7 @@ if page == "Dataset Guide":
     st.markdown("""
 ##  Step-by-Step Guide to Use the System
 
-###  Step 1: Login / Signup
-- Create an account using the **Signup** option  
-- Then login using your credentials  
+###  Step 1: Access the Dashboard 
 -  click on business insights dashboard to uplad your datasets
 - Scroll down to download demo datasets
 ---
