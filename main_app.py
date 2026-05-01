@@ -8,7 +8,251 @@ import base64
 import time
 import requests
 
+def glass_card_start():
+    st.markdown("""
+    <div style="
+        background: rgba(0,0,0,0.75);
+        border: 1px solid
+        rgba(225,225,225,0.2)
+        padding: 25px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0px 0px 20px rgba(0,0,0,0.5);
+    ">
+    """, unsafe_allow_html=True)
 
+def glass_card_end():
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+st.set_page_config(layout="wide")
+def set_background():
+    import base64
+
+    with open("background.png", "rb") as f:
+        b64 = base64.b64encode(f.read()).decode()
+
+    st.markdown(f"""
+    <style>
+    /* 🔥 Apply to ROOT container (strongest) */
+    [data-testid="stAppViewContainer"] {{
+        background: url("data:image/png;base64,{b64}") no-repeat center center fixed !important;
+        background-size: cover !important;
+    }}
+
+    /* 🔥 Kill all white layers */
+    [data-testid="stAppViewContainer"] > .main {{
+        background: transparent !important;
+    }}
+
+    .block-container {{
+        background: transparent !important;
+        padding-top: 1rem !important;
+    }}
+
+    section.main {{
+        background: transparent !important;
+    }}
+
+    /* Sidebar */
+    section[data-testid="stSidebar"] {{
+        background-color: rgba(0,0,0,0.85) !important;
+    }}
+
+    /* Text */
+    h1,h2,h3,h4,h5,h6,p,label,span {{
+        color: white !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+    
+st.markdown("""
+<style>
+
+/* 🔥 FORCE uploader text to black */
+div[data-testid="stFileUploader"] label,
+div[data-testid="stFileUploader"] span,
+div[data-testid="stFileUploader"] small,
+div[data-testid="stFileUploader"] div {
+    color: black !important;
+}
+
+/* 🔥 File name + size text */
+div[data-testid="stFileUploader"] p {
+    color: black !important;
+}
+
+/* 🔥 Browse button (keep blue) */
+div[data-testid="stFileUploader"] button {
+    background-color: #00c6ff !important;
+    color: white !important;
+    border-radius: 10px !important;
+}
+
+/* 🔥 Download buttons fix */
+button[kind="secondary"] {
+    background-color: #00c6ff !important;
+    color: white !important;
+    border-radius: 10px !important;
+}
+
+/* Hover */
+button[kind="secondary"]:hover {
+    background-color: #0072ff !important;
+}
+
+
+/* Sidebar background */
+section[data-testid="stSidebar"] {
+    background-color: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* Sidebar text */
+section[data-testid="stSidebar"] * {
+    color: white !important;
+}
+
+/* Radio buttons text */
+div[role="radiogroup"] label {
+    color: white !important;
+}
+
+/* Logout button fix */
+section[data-testid="stSidebar"] button {
+    background-color: #00c6ff !important;
+    color: white !important;
+    border-radius: 10px;
+}
+
+
+/* Target Streamlit buttons */
+div.stButton > button {
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    color: white;
+    font-size: 18px;
+    height: 55px;
+    width: 260px;
+    border-radius: 12px;
+    border: none;
+    font-weight: bold;
+
+    /* Glow effect */
+    box-shadow: 0 0 15px rgba(0,198,255,0.6);
+
+    /* Smooth animation */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover effect */
+div.stButton > button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0,198,255,1);
+    background: linear-gradient(45deg, #0072ff, #00c6ff);
+}
+
+/* Click effect */
+div.stButton > button:active {
+    transform: scale(0.98);
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+if "page_state" not in st.session_state:
+    st.session_state.page_state = "home"
+
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "splash_done" not in st.session_state:
+    st.session_state.splash_done = False
+
+
+
+st.markdown("""
+<style>
+/* All text white */
+h1, h2, h3, h4, h5, h6, p, div, label {
+    color: white !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+def home_page():
+    import base64
+    import streamlit as st
+
+    # 🔹 Load background image
+    with open("background.png", "rb") as f:
+        data = base64.b64encode(f.read()).decode()
+
+    # 🔹 Background + Text + Button Style
+    st.markdown(f"""
+    <style>
+    .stApp {{
+        background-image: url("data:image/png;base64,{data}");
+        background-size: cover;
+        background-position: center;
+    }}
+
+    /* Make all text white */
+    h1, h2, h3, h4, h5, h6, p, div {{
+        color: white !important;
+    }}
+
+    /* ALL buttons same color */
+    div.stButton > button {{
+        background-color: #00c6ff;
+        color: white;
+        font-size: 18px;
+        height: 50px;
+        width: 200px;
+        border-radius: 10px;
+        border: none;
+    }}
+
+    div.stButton > button:hover {{
+        background-color: #0072ff;
+        color: white;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+    # 🔹 Space to center content
+    st.markdown("<br><br><br>", unsafe_allow_html=True)
+
+    # 🔹 Text Box (for visibility)
+    st.markdown("""
+    <div style="
+    background-color: rgba(0,0,0,0.6);
+    padding: 25px;
+    border-radius: 15px;
+    text-align:center;
+    width: 60%;
+    margin: auto;">
+        <h1>AI Business Intelligence System</h1>
+        <p style="font-size:18px;">
+        An intelligent system that analyzes business data to detect risks and generate insights.
+Helps organizations make accurate, data-driven decisions efficiently.
+        </p>
+        <ul style="list-style-type:none; padding:0;">
+<li>> Sign up if you are a new user and then login to access the system</li>
+<li>> Click on <b>Dashboard</b> to upload your dataset and start analysis</li>
+<li>> Download sample datasets from the <b>Dataset Guide</b> section after login</li>
+</ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.write("")
+
+    # 🔹 Center Button
+    col1, col2, col3 = st.columns([1,1,1])
+
+    with col2:
+        if st.button("Login To Continue"):
+            st.session_state.page_state = "login"
+            st.rerun()
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier, IsolationForest
 from sklearn.metrics import accuracy_score, confusion_matrix
@@ -31,20 +275,24 @@ if "splash_done" not in st.session_state:
 
 # ✅ show splash FIRST
 if not st.session_state.splash_done:
-    try:
-        with open("logo.png", "rb") as f:
-            logo_base64 = base64.b64encode(f.read()).decode()
+    
+    import base64, time
 
-        st.markdown(f"""
-        <div style="display:flex;justify-content:center;align-items:center;height:100vh;">
-            <img src="data:image/png;base64,{logo_base64}" width="200">
-        </div>
-        """, unsafe_allow_html=True)
+    with open("logo.png", "rb") as f:
+        logo_base64 = base64.b64encode(f.read()).decode()
 
-        time.sleep(2)
+    st.markdown(f"""
+    <div style="
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background-color:white;">
+        <img src="data:image/png;base64,{logo_base64}" width="200">
+    </div>
+    """, unsafe_allow_html=True)
 
-    except Exception as e:
-        st.error(f"Splash error: {e}")
+    time.sleep(2)
 
     st.session_state.splash_done = True
     st.rerun()
@@ -122,11 +370,18 @@ def auth():
 # ---------------- LOGIN CHECK ----------------
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
+    
+    set_background()
 
-if not st.session_state.logged_in:
-    auth()
+if st.session_state.page_state == "home":
+    home_page()
     st.stop()
 
+if not st.session_state.logged_in:
+    set_background()  # ⭐ IMPORTANT
+    auth()
+    st.stop()
+set_background ()  
 # ---------------------------------------------------
 # SIDEBAR
 # ---------------------------------------------------
@@ -143,8 +398,10 @@ if st.sidebar.button("Logout"):
 # DATASET GUIDE (DETAILED)
 # ---------------------------------------------------
 if page == "Dataset Guide":
+    set_background()
+    glass_card_start()
     
-    st.title(" Dataset Usage Guide")
+    st.title("📘 Dataset Usage Guide")
 
     # ---------------- GUIDE ----------------
     st.markdown("""
@@ -157,7 +414,7 @@ if page == "Dataset Guide":
 - Scroll down to download demo datasets
 ---
 
-###  Step 2: Upload Dataset 📁
+###  Step 2: Upload Dataset 
 - Go to **Upload Dataset** section  
 - Supported formats:
   - CSV (.csv)
@@ -208,7 +465,7 @@ If required columns are missing, system generates:
 
 ---
 
-## 📁 Supported File Types
+##  Supported File Types
 CSV, Excel, JSON, TXT  
 
 ---
@@ -221,7 +478,7 @@ CSV, Excel, JSON, TXT
 
     # ---------------- DOWNLOAD SECTION ----------------
     st.divider()
-    st.subheader(" Download Sample Datasets")
+    st.subheader("📥 Download Sample Datasets")
 
     st.write("Download these datasets to test the application features.")
 
@@ -252,7 +509,7 @@ CSV, Excel, JSON, TXT
 - Users are encouraged to upload their **own datasets** for actual analysis  
 - Ensure your dataset follows the recommended format for best results  
 """)
-
+    glass_card_end()
     st.stop()
 # ---------------------------------------------------
 # FILE UPLOAD
@@ -316,7 +573,11 @@ df["risk_status"] = (
 # ---------------------------------------------------
 if page == "Business Insights Dashbard":
     
-    st.title(" Business Intelligence Dashboard")
+    set_background()
+    
+    glass_card_start()
+    
+    st.title("📊 Business Intelligence Dashboard")
     st.markdown("### Real-time Business Risk Analysis System")
     st.markdown("""
 ###  Problem Statement
@@ -325,7 +586,7 @@ Businesses struggle to identify risky transactions and low-performing vendors.
 This system provides data-driven insights and predictions.
 """)
 
-    st.sidebar.markdown("###  Filters")
+    st.sidebar.markdown("### 🔍 Filters")
 
     category_filter = st.sidebar.multiselect(
         "Select Category",
@@ -394,7 +655,7 @@ This system provides data-driven insights and predictions.
         fig_line = px.line(trend, x="order_date", y="sales")
         st.plotly_chart(fig_line, use_container_width=True)
 
-    st.subheader("📈 Trend Insight")
+    st.subheader(" Trend Insight")
     st.write("Sales trend shows business performance over time.")
 
     # PIE + SCATTER
@@ -416,14 +677,19 @@ This system provides data-driven insights and predictions.
         map_df = filtered_df.groupby("country")["sales"].sum().reset_index()
         fig_map = px.choropleth(map_df, locations="country", locationmode="country names", color="sales")
         st.plotly_chart(fig_map, use_container_width=True)
-
+        
+        glass_card_end()
 
 # ---------------------------------------------------
-#  RISK ANALYSIS
+# RISK ANALYSIS
 # ---------------------------------------------------
 elif page == "Risk Analysis":
-
-    st.title(" Advanced Risk Analysis Dashboard")
+ 
+    set_background()
+            
+    glass_card_start
+      
+    st.title("⚠️ Advanced Risk Analysis Dashboard")
 
     col1, col2, col3 = st.columns(3)
 
@@ -445,7 +711,7 @@ elif page == "Risk Analysis":
     st.plotly_chart(fig_pie, use_container_width=True)
 
     # CATEGORY RISK
-    st.subheader("Risk by Category")
+    st.subheader(" Risk by Category")
     cat_risk = df.groupby("category")["risk_status"].mean().reset_index()
 
     st.plotly_chart(px.bar(cat_risk, x="category", y="risk_status", color="risk_status"))
@@ -472,13 +738,16 @@ elif page == "Risk Analysis":
     # TOP RISK TRANSACTIONS
     st.subheader(" Top Risk Transactions")
     st.dataframe(df[df["risk_status"] == 1].head(10))
-
+    
+    glass_card_end()
 
 # ---------------------------------------------------
 #  MACHINE LEARNING
 # ---------------------------------------------------
 elif page == "Machine Learning":
-
+     
+    set_background()
+    glass_card_start()
     st.title(" AI Risk Prediction System")
 
     features = ["sales","profit","discount","shipping_cost","quantity"]
@@ -546,17 +815,21 @@ elif page == "Machine Learning":
     if st.button("Predict"):
         result = model.predict([[s,p,d,sh,q]])
         if result[0] == 1:
-            st.error("⚠️ High Risk Transaction")
+            st.error(" High Risk Transaction")
         else:
-            st.success("✅ Safe Transaction")
+            st.success(" Safe Transaction")
 
+    glass_card_end()
+    
 
 # ---------------------------------------------------
-# 🏢 VENDOR ANALYTICS
+#  VENDOR ANALYTICS
 # ---------------------------------------------------
 elif page == "Vendor Analytics":
+    set_background()
+    glass_card_start()
 
-    st.title("🏢 Vendor Risk Intelligence")
+    st.title(" Vendor Risk Intelligence")
 
     vendor_df = df.groupby("vendor id").agg({
         "sales": "sum",
@@ -596,9 +869,11 @@ elif page == "Vendor Analytics":
         st.success("All vendors performing well")
 
     # TOP RISK
-    st.subheader("🚨 High Risk Vendors")
+    st.subheader(" High Risk Vendors")
     st.dataframe(vendor_df.sort_values(by="risk_score", ascending=False).head(5))
 
     # BEST
     st.subheader(" Best Vendors")
     st.dataframe(vendor_df.sort_values(by="sales", ascending=False).head(5))
+    glass_card_end()
+    
