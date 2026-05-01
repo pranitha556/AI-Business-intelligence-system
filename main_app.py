@@ -250,7 +250,7 @@ Helps organizations make accurate, data-driven decisions efficiently.
     col1, col2, col3 = st.columns([1,1,1])
 
     with col2:
-        if st.button("Login To Continue"):
+        if st.button("Start Exploring "):
             st.session_state.page_state = "login"
             st.rerun()
 from sklearn.model_selection import train_test_split
