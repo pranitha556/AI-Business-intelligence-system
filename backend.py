@@ -1,136 +1,154 @@
-from fastapi import FastAPI, HTTPException , UploadFile,File
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
-import sqlite3
 from passlib.context import CryptContext
-from datetime import datetime, timedelta
 from jose import jwt
+from datetime import datetime, timedelta
+from pymongo import MongoClient
 
-# -------------------- CONFIG --------------------
+import pandas as pd
+import io
+
+# ---------------- APP ----------------
+app = FastAPI()
+
+# ---------------- MONGODB ----------------
+MONGO_URL = "PASTE_YOUR_MONGODB_URL_HERE"
+
+client = MongoClient(MONGO_URL)
+
+db = client["ai_business_db"]
+
+users_collection = db["users"]
+
+# ---------------- JWT ----------------
 SECRET_KEY = "mysecretkey"
 ALGORITHM = "HS256"
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# ---------------- PASSWORD HASH ----------------
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
 
-app = FastAPI()
-
-DB = "users.db"
-
-# -------------------- MODEL --------------------
+# ---------------- USER MODEL ----------------
 class User(BaseModel):
     username: str
     password: str
 
-# -------------------- DB SETUP --------------------
-def create_table():
-    conn = sqlite3.connect(DB)
-    c = conn.cursor()
-
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE,
-            password TEXT
-        )
-    """)
-
-    conn.commit()
-    conn.close()
-
-create_table()
-
-# -------------------- HASH FUNCTIONS --------------------
+# ---------------- HASH PASSWORD ----------------
 def hash_password(password):
-    return pwd_context.hash(password[:72])
+    return pwd_context.hash(password)
 
+# ---------------- VERIFY PASSWORD ----------------
 def verify_password(plain, hashed):
-    plain = plain[:72]
     return pwd_context.verify(plain, hashed)
 
-# -------------------- TOKEN --------------------
+# ---------------- CREATE TOKEN ----------------
 def create_token(data):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(hours=1)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# -------------------- SIGNUP --------------------
+    to_encode = data.copy()
+
+    expire = datetime.utcnow() + timedelta(hours=1)
+
+    to_encode.update({"exp": expire})
+
+    return jwt.encode(
+        to_encode,
+        SECRET_KEY,
+        algorithm=ALGORITHM
+    )
+
+# ---------------- SIGNUP ----------------
 @app.post("/signup")
 def signup(user: User):
 
-    conn = sqlite3.connect(DB)
-    c = conn.cursor()
+    existing_user = users_collection.find_one({
+        "username": user.username
+    })
+
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="User already exists"
+        )
 
     hashed_pw = hash_password(user.password)
 
-    try:
-        c.execute(
-            "INSERT INTO users (username, password) VALUES (?, ?)",
-            (user.username, hashed_pw)
-        )
-        conn.commit()
-        return {"message": "Signup successful"}
+    users_collection.insert_one({
+        "username": user.username,
+        "password": hashed_pw
+    })
 
-    except:
-        return {"error": "User already exists"}
+    return {
+        "message": "Signup successful"
+    }
 
-    finally:
-        conn.close()
-
-# -------------------- LOGIN --------------------
+# ---------------- LOGIN ----------------
 @app.post("/login")
 def login(user: User):
-    conn = sqlite3.connect(DB)
-    c = conn.cursor()
 
-    c.execute(
-        "SELECT username, password FROM users WHERE username=?",
-        (user.username,)
+    db_user = users_collection.find_one({
+        "username": user.username
+    })
+
+    if db_user:
+
+        if verify_password(
+            user.password,
+            db_user["password"]
+        ):
+
+            token = create_token({
+                "sub": user.username
+            })
+
+            return {
+                "token": token,
+                "message": "Login successful"
+            }
+
+    raise HTTPException(
+        status_code=401,
+        detail="Invalid credentials"
     )
 
-    result = c.fetchone()
-    conn.close()
-
-    print("USER INPUT:", user.username, user.password)
-    print("DB RESULT:", result)
-
-    if result:
-        stored_password = result[1]
-        print("STORED HASH:", stored_password)
-
-        if verify_password(user.password, stored_password):
-            print("PASSWORD MATCH ✅")
-
-            token = create_token({"sub": user.username})
-            return {"token": token}
-
-        else:
-            print("PASSWORD MISMATCH ❌")
-            raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    else:
-        print("USER NOT FOUND ❌")
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
+# ---------------- ANALYZE ----------------
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
+
     try:
         content = await file.read()
 
         # FILE HANDLING
         if file.filename.endswith(".csv"):
-            df = pd.read_csv(io.StringIO(content.decode("utf-8")))
-        elif file.filename.endswith((".xlsx",".xls")):
-            df = pd.read_excel(io.BytesIO(content))
+
+            df = pd.read_csv(
+                io.StringIO(content.decode("utf-8"))
+            )
+
+        elif file.filename.endswith((".xlsx", ".xls")):
+
+            df = pd.read_excel(
+                io.BytesIO(content)
+            )
+
         elif file.filename.endswith(".json"):
-            df = pd.read_json(io.StringIO(content.decode("utf-8")))
+
+            df = pd.read_json(
+                io.StringIO(content.decode("utf-8"))
+            )
+
         else:
-            return {"error": "Unsupported file"}
+            return {
+                "error": "Unsupported file"
+            }
 
         # CLEAN
         df.columns = df.columns.str.strip().str.lower()
+
         df = df.fillna(0)
 
-        # AUTO COLUMN CREATION
+        # AUTO COLUMNS
         if "quantity" not in df.columns:
             df["quantity"] = 1
 
@@ -150,14 +168,21 @@ async def analyze(file: UploadFile = File(...)):
         if "order_date" not in df.columns:
             df["order_date"] = pd.Timestamp.today()
 
-        df["order_date"] = pd.to_datetime(df["order_date"])
+        df["order_date"] = pd.to_datetime(
+            df["order_date"]
+        )
 
         # CATEGORY
         if "category" not in df.columns:
             df["category"] = "General"
 
+        # VENDOR ID
         if "vendor id" not in df.columns:
-            df["vendor id"] = ["V"+str(i+1).zfill(3) for i in range(len(df))]
+
+            df["vendor id"] = [
+                "V" + str(i + 1).zfill(3)
+                for i in range(len(df))
+            ]
 
         # RISK LOGIC
         df["risk_status"] = (
@@ -166,7 +191,12 @@ async def analyze(file: UploadFile = File(...)):
             (df["sales"] < 500)
         ).astype(int)
 
-        return df.to_dict(orient="records")
+        return df.to_dict(
+            orient="records"
+        )
 
     except Exception as e:
-        return {"error": str(e)}
+
+        return {
+            "error": str(e)
+        }
