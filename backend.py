@@ -12,8 +12,7 @@ import io
 app = FastAPI()
 
 # ---------------- MONGODB ----------------
-MONGO_URL = "PASTE_YOUR_MONGODB_URL_HERE"
-
+MONGO_URL = os.getenv("MONGO_URL")
 client = MongoClient(MONGO_URL)
 
 db = client["ai_business_db"]
@@ -82,7 +81,29 @@ def signup(user: User):
     return {
         "message": "Signup successful"
     }
+@app.post("/signup")
+def signup(user: User):
 
+    existing_user = users_collection.find_one({
+        "username": user.username
+    })
+
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="User already exists"
+        )
+
+    hashed_pw = hash_password(user.password)
+
+    users_collection.insert_one({
+        "username": user.username,
+        "password": hashed_pw
+    })
+
+    return {
+        "message": "Signup successful"
+    }
 # ---------------- LOGIN ----------------
 @app.post("/login")
 def login(user: User):
