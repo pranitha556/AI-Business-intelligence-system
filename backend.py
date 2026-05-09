@@ -7,7 +7,7 @@ from pymongo import MongoClient
 
 import pandas as pd
 import io
-
+import os
 # ---------------- APP ----------------
 app = FastAPI()
 
