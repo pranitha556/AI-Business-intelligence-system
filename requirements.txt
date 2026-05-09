@@ -14,3 +14,5 @@ numpy
 bcrypt==4.0.1
 openpyxl
 pymongo[srv]
+sqlalchemy
+psycopg2-binary
