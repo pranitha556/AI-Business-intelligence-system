@@ -1,26 +1,59 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+
 from passlib.context import CryptContext
 from jose import jwt
-from datetime import datetime, timedelta
-from pymongo import MongoClient
 
-import pandas as pd
-import io
+from datetime import datetime, timedelta
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
+
 import os
+
 # ---------------- APP ----------------
 app = FastAPI()
 
-# ---------------- MONGODB ----------------
-MONGO_URL = os.getenv("MONGO_URL")
-client = MongoClient(MONGO_URL)
+# ---------------- DATABASE URL ----------------
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-db = client["ai_business_db"]
+# ---------------- DATABASE SETUP ----------------
+engine = create_engine(DATABASE_URL)
 
-users_collection = db["users"]
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
+Base = declarative_base()
+
+# ---------------- USER TABLE ----------------
+class UserTable(Base):
+
+    __tablename__ = "users"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    username = Column(
+        String,
+        unique=True
+    )
+
+    password = Column(String)
+
+# ---------------- CREATE TABLE ----------------
+Base.metadata.create_all(bind=engine)
 
 # ---------------- JWT ----------------
 SECRET_KEY = "mysecretkey"
+
 ALGORITHM = "HS256"
 
 # ---------------- PASSWORD HASH ----------------
@@ -31,16 +64,23 @@ pwd_context = CryptContext(
 
 # ---------------- USER MODEL ----------------
 class User(BaseModel):
+
     username: str
+
     password: str
 
 # ---------------- HASH PASSWORD ----------------
 def hash_password(password):
+
     return pwd_context.hash(password)
 
 # ---------------- VERIFY PASSWORD ----------------
 def verify_password(plain, hashed):
-    return pwd_context.verify(plain, hashed)
+
+    return pwd_context.verify(
+        plain,
+        hashed
+    )
 
 # ---------------- CREATE TOKEN ----------------
 def create_token(data):
@@ -49,7 +89,9 @@ def create_token(data):
 
     expire = datetime.utcnow() + timedelta(hours=1)
 
-    to_encode.update({"exp": expire})
+    to_encode.update({
+        "exp": expire
+    })
 
     return jwt.encode(
         to_encode,
@@ -61,78 +103,77 @@ def create_token(data):
 @app.post("/signup")
 def signup(user: User):
 
-    existing_user = users_collection.find_one({
-        "username": user.username
-    })
+    db = SessionLocal()
+
+    existing_user = db.query(UserTable).filter(
+        UserTable.username == user.username
+    ).first()
 
     if existing_user:
+
+        db.close()
+
         raise HTTPException(
             status_code=400,
             detail="User already exists"
         )
 
-    hashed_pw = hash_password(user.password)
+    hashed_pw = hash_password(
+        user.password
+    )
 
-    users_collection.insert_one({
-        "username": user.username,
-        "password": hashed_pw
-    })
+    new_user = UserTable(
+        username=user.username,
+        password=hashed_pw
+    )
 
-    return {
-        "message": "Signup successful"
-    }
-@app.post("/signup")
-def signup(user: User):
+    db.add(new_user)
 
-    existing_user = users_collection.find_one({
-        "username": user.username
-    })
+    db.commit()
 
-    if existing_user:
-        raise HTTPException(
-            status_code=400,
-            detail="User already exists"
-        )
-
-    hashed_pw = hash_password(user.password)
-
-    users_collection.insert_one({
-        "username": user.username,
-        "password": hashed_pw
-    })
+    db.close()
 
     return {
         "message": "Signup successful"
     }
+
 # ---------------- LOGIN ----------------
 @app.post("/login")
 def login(user: User):
 
-    db_user = users_collection.find_one({
-        "username": user.username
+    db = SessionLocal()
+
+    db_user = db.query(UserTable).filter(
+        UserTable.username == user.username
+    ).first()
+
+    db.close()
+
+    if not db_user:
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username"
+        )
+
+    if not verify_password(
+        user.password,
+        db_user.password
+    ):
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid password"
+        )
+
+    token = create_token({
+        "sub": user.username
     })
 
-    if db_user:
-
-        if verify_password(
-            user.password,
-            db_user["password"]
-        ):
-
-            token = create_token({
-                "sub": user.username
-            })
-
-            return {
-                "token": token,
-                "message": "Login successful"
-            }
-
-    raise HTTPException(
-        status_code=401,
-        detail="Invalid credentials"
-    )
-
+    return {
+        "token": token,
+        "message": "Login successful"
+    }
 # ---------------- ANALYZE ----------------
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
