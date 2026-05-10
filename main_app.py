@@ -250,7 +250,7 @@ Helps organizations make accurate, data-driven decisions efficiently.
     col1, col2, col3 = st.columns([1,1,1])
 
     with col2:
-        if st.button("Start Exploring "):
+        if st.button("Start Exploring"):
             st.session_state.page_state = "login"
             st.rerun()
 from sklearn.model_selection import train_test_split
@@ -401,7 +401,7 @@ if page == "Dataset Guide":
     set_background()
     glass_card_start()
     
-    st.title("📘 Dataset Usage Guide")
+    st.title("Dataset Usage Guide")
 
     # ---------------- GUIDE ----------------
     st.markdown("""
@@ -476,7 +476,7 @@ CSV, Excel, JSON, TXT
 
     # ---------------- DOWNLOAD SECTION ----------------
     st.divider()
-    st.subheader("📥 Download Sample Datasets")
+    st.subheader(" Download Sample Datasets")
 
     st.write("Download these datasets to test the application features.")
 
@@ -572,19 +572,53 @@ df["risk_status"] = (
 if page == "Business Insights Dashbard":
     
     set_background()
-    
+
     glass_card_start()
-    
-    st.title("📊 Business Intelligence Dashboard")
-    st.markdown("### Real-time Business Risk Analysis System")
+
+    # ---------------- HEADER ----------------
+
     st.markdown("""
-###  Problem Statement
+    <div style="
+    background: linear-gradient(90deg,#0f172a,#1e3a8a);
+    padding:25px;
+    border-radius:20px;
+    margin-bottom:25px;
+    text-align:center;
+    ">
 
-Businesses struggle to identify risky transactions and low-performing vendors.
-This system provides data-driven insights and predictions.
-""")
+    <h1 style="color:white;">
+     AI Business Intelligence Dashboard
+    </h1>
 
-    st.sidebar.markdown("### 🔍 Filters")
+    <p style="color:#cbd5e1;font-size:18px;">
+    Real-Time Analytics • Risk Detection • AI Insights
+    </p>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div style="
+    background: rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    ">
+
+    <h3> Dashboard Overview</h3>
+
+    <p>
+    This platform provides intelligent business analytics,
+    vendor monitoring, predictive insights,
+    and real-time risk analysis using AI-powered dashboards.
+    </p>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ---------------- SIDEBAR ----------------
+
+    st.sidebar.markdown("##  Dashboard Filters")
 
     category_filter = st.sidebar.multiselect(
         "Select Category",
@@ -592,47 +626,178 @@ This system provides data-driven insights and predictions.
         default=df["category"].unique()
     )
 
-    filtered_df = df[df["category"].isin(category_filter)]
+    filtered_df = df[
+        df["category"].isin(category_filter)
+    ]
 
-    col1,col2,col3,col4 = st.columns(4)
+    # ---------------- KPI CARDS ----------------
 
-    col1.metric("Total Sales", round(filtered_df["sales"].sum(),2))
-    col2.metric("Total Profit", round(filtered_df["profit"].sum(),2))
-    col3.metric("Transactions", len(filtered_df))
-    col4.metric("High Risk %", round(filtered_df["risk_status"].mean()*100,2))
+    col1, col2, col3, col4 = st.columns(4)
 
-    st.subheader(" Key Insights")
+    with col1:
 
-    top_category = filtered_df.groupby("category")["sales"].sum().idxmax()
-    high_risk_percent = filtered_df["risk_status"].mean() * 100
+        st.markdown(f"""
+        <div style="
+            background:#111827;
+            padding:25px;
+            border-radius:18px;
+            text-align:center;
+            box-shadow:0px 0px 15px rgba(0,255,255,0.3);
+        ">
 
-    st.write(f" Top Category: {top_category}")
-    st.write(f" High Risk Transactions: {round(high_risk_percent,2)}%")
+        <h3 style='color:#9ca3af'>
+         Total Sales
+        </h3>
 
-    st.subheader(" Recommendations")
+        <h1 style='color:#22d3ee'>
+        {round(filtered_df["sales"].sum(),2)}
+        </h1>
 
-    if high_risk_percent > 30:
-        st.warning("High risk detected. Reduce discount strategy.")
-    else:
-        st.success("Business is stable.")
+        </div>
+        """, unsafe_allow_html=True)
 
-    #  GAUGE
-    risk_rate = filtered_df["risk_status"].mean()*100
+    with col2:
+
+        st.markdown(f"""
+        <div style="
+            background:#111827;
+            padding:25px;
+            border-radius:18px;
+            text-align:center;
+            box-shadow:0px 0px 15px rgba(0,255,0,0.3);
+        ">
+
+        <h3 style='color:#9ca3af'>
+         Total Profit
+        </h3>
+
+        <h1 style='color:#4ade80'>
+        {round(filtered_df["profit"].sum(),2)}
+        </h1>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+
+        st.markdown(f"""
+        <div style="
+            background:#111827;
+            padding:25px;
+            border-radius:18px;
+            text-align:center;
+            box-shadow:0px 0px 15px rgba(255,255,0,0.3);
+        ">
+
+        <h3 style='color:#9ca3af'>
+         Transactions
+        </h3>
+
+        <h1 style='color:#facc15'>
+        {len(filtered_df)}
+        </h1>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col4:
+
+        risk_percent = round(
+            filtered_df["risk_status"].mean()*100,
+            2
+        )
+
+        st.markdown(f"""
+        <div style="
+            background:#111827;
+            padding:25px;
+            border-radius:18px;
+            text-align:center;
+            box-shadow:0px 0px 15px rgba(255,0,0,0.3);
+        ">
+
+        <h3 style='color:#9ca3af'>
+        ⚠ High Risk %
+        </h3>
+
+        <h1 style='color:#f87171'>
+        {risk_percent}%
+        </h1>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ---------------- AI INSIGHTS ----------------
+
+    top_category = filtered_df.groupby(
+        "category"
+    )["sales"].sum().idxmax()
+
+    st.markdown(f"""
+    <div style="
+    background:rgba(0,0,0,0.6);
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+    ">
+
+    <h2 style="color:#22d3ee;">
+    🤖 AI Insights
+    </h2>
+
+    <p style="font-size:18px;color:white;">
+
+    • Top category is <b>{top_category}</b><br><br>
+
+    • Risk exposure detected in
+    <b>{risk_percent}%</b> transactions<br><br>
+
+    • AI detected active business growth trends<br><br>
+
+    • Vendor monitoring system is operational
+
+    </p>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ---------------- GAUGE ----------------
+
+    risk_rate = filtered_df[
+        "risk_status"
+    ].mean()*100
 
     fig_gauge = go.Figure(go.Indicator(
         mode="gauge+number",
         value=risk_rate,
         title={'text':"Business Risk %"},
-        gauge={'axis':{'range':[0,100]}}
+        gauge={
+            'axis':{'range':[0,100]}
+        }
     ))
 
-    st.plotly_chart(fig_gauge, use_container_width=True)
+    fig_gauge.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)"
+    )
 
-    #  CHARTS
+    st.plotly_chart(
+        fig_gauge,
+        use_container_width=True
+    )
+
+    # ---------------- CHARTS ----------------
+
     col1, col2 = st.columns(2)
 
     with col1:
-        cat_data = filtered_df.groupby("category")["sales"].sum().reset_index()
+
+        cat_data = filtered_df.groupby(
+            "category"
+        )["sales"].sum().reset_index()
 
         fig_bar = px.bar(
             cat_data,
@@ -641,42 +806,132 @@ This system provides data-driven insights and predictions.
             color="category"
         )
 
-        st.plotly_chart(fig_bar, use_container_width=True)
+        fig_bar.update_layout(
+            template="plotly_dark",
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(
+            fig_bar,
+            use_container_width=True
+        )
 
     with col2:
-        filtered_df["order_date"] = pd.to_datetime(filtered_df["order_date"], errors="coerce")
-        filtered_df = filtered_df.dropna(subset=["order_date"])
 
-        trend = filtered_df.groupby(filtered_df["order_date"].dt.to_period("M"))["sales"].sum().reset_index()
-        trend["order_date"] = trend["order_date"].astype(str)
+        filtered_df["order_date"] = pd.to_datetime(
+            filtered_df["order_date"],
+            errors="coerce"
+        )
 
-        fig_line = px.line(trend, x="order_date", y="sales")
-        st.plotly_chart(fig_line, use_container_width=True)
+        filtered_df = filtered_df.dropna(
+            subset=["order_date"]
+        )
 
-    st.subheader(" Trend Insight")
-    st.write("Sales trend shows business performance over time.")
+        trend = filtered_df.groupby(
+            filtered_df["order_date"].dt.to_period("M")
+        )["sales"].sum().reset_index()
 
-    # PIE + SCATTER
+        trend["order_date"] = trend[
+            "order_date"
+        ].astype(str)
+
+        fig_line = px.line(
+            trend,
+            x="order_date",
+            y="sales"
+        )
+
+        fig_line.update_traces(
+            line_shape="spline"
+        )
+
+        fig_line.update_layout(
+            template="plotly_dark",
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(
+            fig_line,
+            use_container_width=True
+        )
+
+    # ---------------- PIE + AREA ----------------
+
     col3, col4 = st.columns(2)
 
     with col3:
-        risk_df = filtered_df["risk_status"].value_counts().reset_index()
-        risk_df.columns = ["Risk Type","Count"]
 
-        fig_pie = px.pie(risk_df, names="Risk Type", values="Count")
-        st.plotly_chart(fig_pie, use_container_width=True)
+        risk_df = filtered_df[
+            "risk_status"
+        ].value_counts().reset_index()
+
+        risk_df.columns = [
+            "Risk Type",
+            "Count"
+        ]
+
+        fig_pie = px.pie(
+            risk_df,
+            names="Risk Type",
+            values="Count"
+        )
+
+        fig_pie.update_layout(
+            template="plotly_dark",
+            paper_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(
+            fig_pie,
+            use_container_width=True
+        )
 
     with col4:
-        fig_scatter = px.scatter(filtered_df, x="sales", y="profit", color="risk_status")
-        st.plotly_chart(fig_scatter, use_container_width=True)
 
-    # MAP
+        fig_area = px.area(
+            trend,
+            x="order_date",
+            y="sales"
+        )
+
+        fig_area.update_layout(
+            template="plotly_dark",
+            paper_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(
+            fig_area,
+            use_container_width=True
+        )
+
+    # ---------------- MAP ----------------
+
     if "country" in filtered_df.columns:
-        map_df = filtered_df.groupby("country")["sales"].sum().reset_index()
-        fig_map = px.choropleth(map_df, locations="country", locationmode="country names", color="sales")
-        st.plotly_chart(fig_map, use_container_width=True)
-        
-        glass_card_end()
+
+        map_df = filtered_df.groupby(
+            "country"
+        )["sales"].sum().reset_index()
+
+        fig_map = px.choropleth(
+            map_df,
+            locations="country",
+            locationmode="country names",
+            color="sales"
+        )
+
+        fig_map.update_layout(
+            template="plotly_dark",
+            paper_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(
+            fig_map,
+            use_container_width=True
+        )
+
+    glass_card_end()
 
 # ---------------------------------------------------
 # RISK ANALYSIS
@@ -685,9 +940,9 @@ elif page == "Risk Analysis":
  
     set_background()
             
-    glass_card_start
+    glass_card_start()
       
-    st.title("⚠️ Advanced Risk Analysis Dashboard")
+    st.title(" Advanced Risk Analysis Dashboard")
 
     col1, col2, col3 = st.columns(3)
 
@@ -737,7 +992,7 @@ elif page == "Risk Analysis":
     st.subheader(" Top Risk Transactions")
     st.dataframe(df[df["risk_status"] == 1].head(10))
     
-    glass_card_end()
+    glass_card_end ()  
 
 # ---------------------------------------------------
 #  MACHINE LEARNING
@@ -821,57 +1076,158 @@ elif page == "Machine Learning":
     
 
 # ---------------------------------------------------
-#  VENDOR ANALYTICS
+# VENDOR ANALYTICS
 # ---------------------------------------------------
+
 elif page == "Vendor Analytics":
-    set_background()
-    glass_card_start()
 
-    st.title(" Vendor Risk Intelligence")
+    st.title(" Vendor Analytics")
 
-    vendor_df = df.groupby("vendor id").agg({
+    # ================= DASHBOARD SUMMARY =================
+
+    st.subheader(" Vendor Dashboard Summary")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        st.info(f"""
+        ###  Total Vendors
+
+        {df.shape[0]}
+        """)
+
+    with col2:
+
+        avg_risk = round(
+            df["risk_status"].mean(),
+            2
+        )
+
+        st.warning(f"""
+        ### ⚠ Average Risk
+
+        {avg_risk}
+        """)
+
+    with col3:
+
+        risky_count = (
+            df["risk_status"] > 0.5
+        ).sum()
+
+        st.error(f"""
+        ###  High Risk Vendors
+
+        {risky_count}
+        """)
+
+    st.write("")
+
+    # ================= VENDOR DATA =================
+
+    vendor_df = df.groupby(
+        "vendor id"
+    ).agg({
         "sales": "sum",
         "profit": "sum",
         "risk_status": "mean"
     }).reset_index()
 
-    vendor_df["risk_score"] = vendor_df["risk_status"] * 100
+    vendor_df["risk_status"] = (
+        vendor_df["risk_status"] * 100
+    )
 
-    # KPIs
-    col1, col2 = st.columns(2)
-    col1.metric("Total Vendors", vendor_df.shape[0])
-    col2.metric("Avg Vendor Risk", round(vendor_df["risk_score"].mean(),2))
+    # ================= BAR CHART =================
 
-    st.markdown("---")
+    fig = px.bar(
+        vendor_df,
+        x="vendor id",
+        y="risk_status",
+        color="risk_status",
+        title=" Vendor Risk Analysis",
+        color_continuous_scale="reds"
+    )
 
-    # BAR
-    st.plotly_chart(px.bar(vendor_df, x="vendor id", y="risk_score"))
+    fig.update_layout(
+        template="plotly_dark",
+        height=500
+    )
 
-    # SCATTER
-    st.plotly_chart(px.scatter(
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+    # ================= SCATTER CHART =================
+
+    fig2 = px.scatter(
         vendor_df,
         x="sales",
         y="profit",
-        size="risk_score",
-        color="risk_score"
-    ))
+        size="risk_status",
+        color="risk_status",
+        hover_name="vendor id",
+        title=" Vendor Sales vs Profit",
+        color_continuous_scale="viridis"
+    )
 
-    # NEW FEATURE 
-    st.subheader(" Vendor Insight")
+    fig2.update_layout(
+        template="plotly_dark",
+        height=500
+    )
 
-    risky_vendors = vendor_df[vendor_df["risk_score"] > 50]
+    st.plotly_chart(
+        fig2,
+        use_container_width=True
+    )
+
+    # ================= INSIGHTS =================
+
+    st.subheader(" Vendor Insights")
+
+    risky_vendors = vendor_df[
+        vendor_df["risk_status"] > 50
+    ]
 
     if len(risky_vendors) > 0:
-        st.warning(f"{len(risky_vendors)} vendors are high risk")
+
+        st.warning(
+            f"{len(risky_vendors)} vendors are high risk."
+        )
+
     else:
-        st.success("All vendors performing well")
 
-    # TOP RISK
-    st.subheader(" High Risk Vendors")
-    st.dataframe(vendor_df.sort_values(by="risk_score", ascending=False).head(5))
+        st.success(
+            "✅ All vendors are performing well."
+        )
 
-    # BEST
-    st.subheader(" Best Vendors")
-    st.dataframe(vendor_df.sort_values(by="sales", ascending=False).head(5))
+    # ================= TABLES =================
+
+    colA, colB = st.columns(2)
+
+    with colA:
+
+        st.subheader(" High Risk Vendors")
+
+        st.dataframe(
+            vendor_df.sort_values(
+                by="risk_status",
+                ascending=False
+            ).head(5),
+            use_container_width=True
+        )
+
+    with colB:
+
+        st.subheader(" Best Vendors")
+
+        st.dataframe(
+            vendor_df.sort_values(
+                by="sales",
+                ascending=False
+            ).head(5),
+            use_container_width=True
+        )
+
     glass_card_end()
-    
