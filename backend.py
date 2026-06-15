@@ -18,10 +18,11 @@ import os
 app = FastAPI()
 
 # ---------------- DATABASE URL ----------------
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = "sqlite:///./users.db"
 
 # ---------------- DATABASE SETUP ----------------
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL,connect_args={"check_same_thread": False})
+
 
 SessionLocal = sessionmaker(
     autocommit=False,
@@ -69,6 +70,12 @@ class User(BaseModel):
     username: str
 
     password: str
+    
+# ---------------- FORGOT PASSWORD MODEL ----------------
+class ForgotPassword(BaseModel):
+
+    username: str
+    new_password: str
 
 # ---------------- HASH PASSWORD ----------------
 def hash_password(password):
@@ -174,6 +181,35 @@ def login(user: User):
     return {
         "token": token,
         "message": "Login successful"
+    }
+    @app.post("/forgot-password")
+    def forgot_password(data: ForgotPassword):
+
+      db = SessionLocal()
+
+    user = db.query(UserTable).filter(
+        UserTable.username == data.username
+    ).first()
+
+    if not user:
+
+        db.close()
+
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    user.password = hash_password(
+        data.new_password
+    )
+
+    db.commit()
+
+    db.close()
+
+    return {
+        "message": "Password reset successful"
     }
 # ---------------- ANALYZE ----------------
 @app.post("/analyze")
