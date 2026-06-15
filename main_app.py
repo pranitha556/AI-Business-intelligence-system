@@ -301,7 +301,7 @@ if not st.session_state.splash_done:
 def auth():
     
     st.title("AI Business Intelligence Platform ")
-    choice = st.radio("Choose", ["Login", "Sign Up"])
+    choice = st.radio("Choose", ["Login", "Sign Up","Forgot Password"])
 
     # ---------------- LOGIN ----------------
     if choice == "Login":
@@ -338,8 +338,8 @@ def auth():
                     st.error(f"Error: {e}")
 
     # ---------------- SIGNUP ----------------
-    else:
-
+    elif choice == "Sign Up":
+    
         u = st.text_input("Username", key="su")
         p = st.text_input("Password", type="password", key="sp")
 
@@ -357,7 +357,8 @@ def auth():
                             "password": p.strip()
                         }
                     )
-
+                    
+                    
                     data = res.json()
 
                     if res.status_code == 200:
@@ -367,8 +368,50 @@ def auth():
 
                 except Exception as e:
                     st.error(f"Error: {e}")
+ # ---------------- FORGOT PASSWORD ----------------
+    elif choice == "Forgot Password":
+
+        st.subheader("Forgot Password")
+
+        username = st.text_input(
+            "Username",
+            key="fp_user"
+        )
+
+        new_password = st.text_input(
+            "New Password",
+            type="password",
+            key="fp_pass"
+        )
+
+        if st.button("Reset Password"):
+
+            res = requests.post(
+                "https://ai-business-intelligence-system-kmr6.onrender.com/forgot-password",
+                json={
+                    "username": username,
+                    "new_password": new_password
+                }
+            )
+
+            data = res.json()
+
+            if res.status_code == 200:
+
+                st.success(
+                    "Password reset successfully ✅"
+                )
+
+            else:
+
+                st.error(
+                    data.get(
+                        "detail",
+                        "Reset failed"
+                    )
+                )
 # ---------------- LOGIN CHECK ----------------
-if "logged_in" not in st.session_state:
+if"logged_in" not in st.session_state:
     st.session_state.logged_in = False
     
     set_background()
